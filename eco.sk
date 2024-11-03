@@ -1,0 +1,75 @@
+# Don't like the essentials economy, nor your variable based economy? 
+# I made this simple economy system that uses NBT tags to store the player's balance.
+# It's not the most efficient, but it's simple and easy to understand.
+
+# To use this, you need to have the following plugins:
+# Skript 2.9.0+, Skript-Reflect 2.5.0+
+
+# Expression
+
+expression:
+    patterns:
+        [the] bal[ance] of %player%
+        [the] %player%[']s bal[ance]
+    get:
+        return double tag "custom;Balance" of nbt compound of expr-1
+    add:
+        add change value to double tag "custom;Balance" of nbt compound of expr-1
+    set:
+        set double tag "custom;Balance" of nbt compound of expr-1 to change value
+    remove:
+        remove change value from double tag "custom;Balance" of nbt compound of expr-1
+    reset:
+        set double tag "custom;Balance" of nbt compound of expr-1 to 0
+    remove all:
+        set double tag "custom;Balance" of nbt compound of expr-1 to 0
+    delete:
+        delete double tag "custom;Balance" of nbt compound of expr-1
+
+# format func, dont really need it if you have one
+
+function ecoFormat(n: number) :: text:
+    set {_data} to "QT,18|Q,15|T,12|B,9|M,6|k,3"
+    loop split {_data} at "|":
+        set {_s::*} to split loop-value at ","
+        {_n} >= 10 ^ {_s::2} parsed as number
+        return "%{_n} / 10 ^ {_s::2} parsed as number%%{_s::1}%"
+    return "%{_n}%"
+
+# Eco commands
+
+command balance [<player>]:
+    trigger:
+        set {_p} to player if arg-1 is not set
+        set {_p} to arg-1 if arg-1 is set
+        send "&6%{_p}%&7's balance: &6$%balance of {_p}%&7."
+
+command pay <player> <number>:
+    permission: eco.pay
+    trigger:
+        set {_p} to player
+        if arg-2 is less than 0:
+            send "&cYou can't pay a negative amount."
+            stop
+        if arg-2 is greater than balance of player:
+            send "&cYou don't have enough money."
+            stop
+        remove arg-2 from balance of player
+        add arg-2 to balance of arg-1
+        send "&7You paid &6$%{_n}%&7 to &6%arg-1%&7."
+
+command eco <text> <player> [<number>]:
+    permission: eco.admin
+    trigger:
+        if arg-1 is "set":
+            set balance of arg-2 to arg-3
+            send "&7Set &6%arg-2%&7's balance to &6$%arg-3%&7."
+        if arg-1 is "add":
+            add arg-3 to balance of arg-2
+            send "&7Added &6$%arg-3%&7 to &6%arg-2%&7's balance."
+        if arg-1 is "remove":
+            remove arg-3 from balance of arg-2
+            send "&7Removed &6$%arg-3%&7 from &6%arg-2%&7's balance."
+        if arg-1 is "reset":
+            reset balance of arg-2
+            send "&7Reset &6%arg-2%&7's balance."
