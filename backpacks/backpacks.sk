@@ -3,6 +3,10 @@
 
 # This has not been tested on a production server, so please test it on a test server first.
 
+function invOpen(p: player, size: integer, name: object, tag: object):
+    set metadata tag {_tag} of {_p} to chest inventory with {_size} rows named "%{_name}%"
+    open (metadata tag {_tag} of {_p}) to {_p}
+
 # YML Configuration
 # NOTE: To use this, you need to make a new folder in the Skript plugin folder called "data" and create a new file called "itemWorth.yml" in it.
 # There is an example of itemWorth.yml in this repo.
