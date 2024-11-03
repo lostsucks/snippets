@@ -1,0 +1,58 @@
+
+options:
+    link: https://cravatar.eu/helmavatar/%{_player}'s uuid%/8.png
+
+import:
+    java.net.URL
+    javax.imageio.ImageIO
+    net.md_5.bungee.api.ChatColor
+    java.awt.Color
+
+local function getSkinPixels(player: offline player, display.char: string="█") :: strings:
+    set {_image} to ImageIO.read(new URL("{@link}"))
+    loop 8 times:
+        loop 8 times:
+            set {_line} to (loop-value-1) - 1
+            set {_skin::%{_line}%} to join {_skin::%{_line}%} and "%ChatColor.of(new Color({_image}.getRGB((loop-value-2) - 1, {_line})))%█"
+    return {_skin::*}
+
+local function return_Character(character: string, loopAmount: number) :: string:
+    set {_returnString} to ""
+    loop {_loopAmount} times:
+        set {_returnString} to "%{_returnString}%%{_character}%"
+    return {_returnString}
+
+command purchase <offline player> <number> <text>:
+    permission: op
+    trigger:
+        if {-purchase} is not set:
+            delete {-saidGG::*}
+            set {_pixels::*} to getSkinPixels(arg-1)
+            broadcast "%nl%%{_pixels::1}%"
+            broadcast "%{_pixels::2}%"
+            broadcast "%{_pixels::3}% &6%arg-1%&f purchased &6%arg-3%&f!"
+            broadcast "%{_pixels::4}%"
+            broadcast "%{_pixels::5}% &fPrice: &6$%arg-2%&f!"
+            broadcast "%{_pixels::6}% &fWant to support our server? &7<link:https://server.tebex.io>Click Here!"
+            broadcast "%{_pixels::7}%"
+            broadcast "%{_pixels::8}%%nl%" 
+            broadcast "&6&lPREFIX &8• &fType &6""GG"" &ffor &6$1,000&f!%nl%&r"
+            send title "&6&lPREFIX &8• &fType &6""GG"" &ffor &6$1,000&f!%nl%&r" to all players for 3 seconds
+            set {-purchase} to true
+            wait 10 seconds
+            set {-purchase} to false
+            broadcast "%nl%&6&lPREFIX &8• &6""GG"" &fEvent expired!%nl%&r"
+            delete {-saidGG::*}
+
+on chat:
+    if {-purchase} = true:
+        if {_m} contains "gg":
+            if {-saidGG::%uuid of player%} is not set:  
+                set {_list::*} to "&b&k|&3&lG&b&lG&3&k|&r", "&c&k|&4&lG&c&lG&4&k|&r", "&e&k|&6&lG&e&lG&6&k|&r" and "&a&k|&2&lG&a&lG&2&k|&r"
+                replace all "GG" in {_m} with random element out of {_list::*}
+                set {-saidGG::%uuid of player%} to true
+                add 1000 to player's balance
+                send action bar "&a+$1000!"
+                play sound "entity.experience_orb.pickup" to player
+            else:
+                send "&cYou can only say &f""GG"" &conce per event!"
