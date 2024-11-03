@@ -1,0 +1,28 @@
+# made this really clean sitting system
+# SkBee 3.6.1+, Skript 2.9.0+
+
+function sitAt(sitter:entity, sitLocation:location, offsetVec:vector=vector(0,0,0)):
+    set {_sitLocation} to {_sitLocation} ~ {_offsetVec}
+    spawn text display at {_sitLocation}:
+        set metadata "seat" of entity to true
+        make {_sitter} ride entity
+
+on dismount:
+    set {_vehicle} to vehicle of player
+    {_vehicle} has metadata "seat"
+    wait a tick
+    delete entity within {_vehicle}
+
+command /sit:
+    permission: void.sit
+    trigger:
+        sitAt(player, player)
+
+on right click:
+    if boolean tag "minecraft:custom_data;IsSeat" of nbt compound of targeted block is true:
+        sitAt(player, location of targeted block)
+
+command makeseat:
+    permission: op
+    trigger:
+        set boolean tag "minecraft:custom_data;IsSeat" of nbt compound of targeted block to true
