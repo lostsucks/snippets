@@ -1,0 +1,80 @@
+# Requires SkBee 3.6.1+, Skript 2.9.0+, and Skript-Reflect 2.5.0+
+# Minecraft 1.21+ (Due to NBT Changes)
+
+# This has not been tested on a production server, so please test it on a test server first.
+
+# YML Configuration
+# NOTE: To use this, you need to make a new folder in the Skript plugin folder called "data" and create a new file called "itemWorth.yml" in it.
+# There is an example of itemWorth.yml in this repo.
+
+import:
+    org.bukkit.configuration.file.YamlConfiguration
+    java.io.File
+
+function getItemWorth(i: itemtype, isStack: boolean = false) :: number:
+    set {_file} to new File("plugins/Skript/data", "itemWorth.yml")
+    set {_yaml} to YamlConfiguration.loadConfiguration({_file})
+    set {_return} to {_yaml}.getString("%type of {_i}%")
+    if {_return} is not set:
+        return 0
+    else:
+        return {_return} parsed as number if {_isStack} is false
+        return ({_return} parsed as number) * {_i}.amount if {_isStack} is true
+
+# Skript
+
+function obtainBackpack(p: player):
+    set {_x} to {backPackItem}
+    replace all "{PLAYER}" in lore of {_x} with name of {_p}
+    set string tag "minecraft:custom_data;Owner" of nbt compound of {_x} to name of {_p}
+    give {_x} to {_p}
+
+on right click:
+    name of player's tool contains "&c&lBACKPACK &7(&e∞&7)"
+    string tag "minecraft:custom_data;Owner" of nbt compound of player's tool contains name of player
+    cancel event
+    openBackpack(player)
+
+on block place:
+    event-block is player head
+    cancel event
+
+on block break:
+    add 1 to long tag "custom;BlocksBroken" of nbt compound of player
+    set {_block} to "%type of event-block%"
+    add {_block} to {-backpack::%uuid of player%::*}
+    send action bar "&c&lBACKPACK &8• &e+$%getItemWorth({_block} parsed as itemtype)% &7(Backpack Value: &e$%format(calculateBackpackWorth(player))%&7)" to player
+
+function openBackpack(p: player):
+    invOpen({_p}, 3, "&0Backpack", "backpack")
+
+    set {_dgsgp} to dark gray stained glass pane
+    hide the entire tooltip of {_dgsgp}
+    set slot (integers from 0 to 26) of (metadata tag "backpack" of {_p}) to {_dgsgp}
+
+    set {_bBroken} to long tag "custom;BlocksBroken" of nbt compound of {_p}
+    set {_bpAm} to size of {-backpack::%uuid of {_p}%::*}
+    if {_bpAm} is not set:
+        set {_bpAm} to 0
+
+    set {_book} to book named "&c&lBACKPACK CONTENTS" with lore " &c• &fCapacity: &e∞%nl% &c• &fBlocks Broken: &e%{_bBroken}%%nl%%nl%&cContents &7(&e%{_bpAm}%&7)%nl%"
+    set slot 13 of (metadata tag "backpack" of {_p}) to {_book}
+
+function sellBackpack(p: player):
+    add calculateBackpackWorth({_p}) to bal of {_p}
+    delete {-backpack::%uuid of {_p}%::*}
+    updateSb({_p})
+
+function calculateBackpackWorth(p: player) :: number:
+    set {_total} to 0
+    loop {-backpack::%uuid of {_p}%::*}:
+        add getItemWorth(loop-value parsed as itemtype) to {_total}
+    return {_total}
+
+on inventory click:
+    event-inventory = (metadata tag "backpack" of player)
+    cancel event
+    if event-slot = 13:
+        send action bar "&c&lBACKPACK &8• &e+$%format(calculateBackpackWorth(player))% &7(Backpack Sold)" to player
+        sellBackpack(player)
+        close player's inventory

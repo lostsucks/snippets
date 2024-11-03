@@ -1,0 +1,35 @@
+# EXAMPLE itemWorth.yml FILE
+
+# Ores
+copper ore: 2.21
+coal ore: 4.44
+iron ore: 6.80
+redstone ore: 7.15
+lapis ore: 7.25
+gold ingot ore: 22.1
+diamond ore: 33.0
+emerald ore: 54.5
+
+# Deepslate Ores
+deepslate copper ore: 2.61
+deepslate coal ore: 4.84
+deepslate iron ore: 7.20
+deepslate redstone ore: 7.55
+deepslate lapis ore: 7.65
+deepslate gold ingot ore: 22.6
+deepslate diamond ore: 33.5
+deepslate emerald ore: 55.0
+
+# Blocks
+copper block: 18.0
+coal block: 36.0
+iron block: 54.0
+redstone block: 57.0
+lapis block: 58.0
+gold ingot block: 176.0
+diamond block: 264.0
+emerald block: 440.0
+
+# Misc
+stone block: 0.05
+cobblestone block: 0.05
