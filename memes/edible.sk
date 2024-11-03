@@ -1,0 +1,10 @@
+# make anything edible!
+# SkBee 3.6.1+, 1.21+
+
+command makefood:
+    permission: op
+    trigger:
+        apply food component to player's tool:
+            nutrition: 1
+            saturation: 1
+            can always eat: true
