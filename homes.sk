@@ -1,0 +1,138 @@
+# made this home system for my factions server and it's really nice
+# could use some UI updates but overall it's pretty clean
+# SkBee 3.6.1+, Skript 2.9.0+
+
+function invOpen(p: player, size: integer, name: object, tag: object):
+    set metadata tag {_tag} of {_p} to chest inventory with {_size} rows named "%{_name}%"
+    open (metadata tag {_tag} of {_p}) to {_p}
+
+command home:
+    aliases: h, homes
+    trigger:
+        invOpen(player, 4, "&0Homes", "home")
+        set slot (integers from 0 to 54) of (metadata tag "home" of player) to gray stained glass pane named "&7"
+        set slot 10 of (metadata tag "home" of player) to dark gray standing banner named "&7Faction Home" with lore "  &7→ &fTeleport to your faction's home!"
+        set slot 12 of (metadata tag "home" of player) to gray bed named "&7Home #1 &8[&a✔&8] " with lore "  &7→ &fTeleport to your first home!"
+
+        set slot 13 of (metadata tag "home" of player) to gray bed named "&7Home #2 &8[&a✔&8] " with lore "  &7→ &fTeleport to your second home!" if player has permission "homes.2"
+        set slot 13 of (metadata tag "home" of player) to gray bed named "&7Home #2 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.2"
+
+        set slot 14 of (metadata tag "home" of player) to gray bed named "&7Home #3 &8[&a✔&8] " with lore "  &7→ &fTeleport to your third home!" if player has permission "homes.3"
+        set slot 14 of (metadata tag "home" of player) to gray bed named "&7Home #3 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.3"
+
+        set slot 15 of (metadata tag "home" of player) to gray bed named "&7Home #4 &8[&a✔&8] " with lore "  &7→ &fTeleport to your fourth home!" if player has permission "homes.4"
+        set slot 15 of (metadata tag "home" of player) to gray bed named "&7Home #4 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.4"
+        
+        set slot 16 of (metadata tag "home" of player) to gray bed named "&7Home #5 &8[&a✔&8] " with lore "  &7→ &fTeleport to your fifth home!" if player has permission "homes.5"
+        set slot 16 of (metadata tag "home" of player) to gray bed named "&7Home #5 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.5"
+
+        set slot 19 of (metadata tag "home" of player) to barrier named "&cExit" with lore "  &7→ &fCloses the menu."
+        set slot 21 of (metadata tag "home" of player) to red dye named "&cRemove Home #1 &8[&a✔&8] " with lore "  &7→ &fRemove your first home!"
+
+        set slot 22 of (metadata tag "home" of player) to red dye named "&cRemove Home #2 &8[&a✔&8] " with lore "  &7→ &fRemove your second home!" if player has permission "homes.2"
+        set slot 22 of (metadata tag "home" of player) to red dye named " &cRemove Home #2 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.2"
+
+        set slot 23 of (metadata tag "home" of player) to red dye named "&cRemove Home #3 &8[&a✔&8] " with lore "  &7→ &fRemove your third home!" if player has permission "homes.3"
+        set slot 23 of (metadata tag "home" of player) to red dye named " &cRemove Home #3 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.3"
+
+        set slot 24 of (metadata tag "home" of player) to red dye named "&cRemove Home #4 &8[&a✔&8] " with lore "  &7→ &fRemove your fourth home!" if player has permission "homes.4"
+        set slot 24 of (metadata tag "home" of player) to red dye named " &cRemove Home #4 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.4"
+
+        set slot 25 of (metadata tag "home" of player) to red dye named "&cRemove Home #5 &8[&a✔&8] " with lore "  &7→ &fRemove your fifth home!" if player has permission "homes.5"
+        set slot 25 of (metadata tag "home" of player) to red dye named " &cRemove Home #5 &8[&c❌&8]" with lore "  &7→ &fYou don't have access!" if player does not have permission "homes.5"
+
+on inventory click:
+    if event-inventory = (metadata tag "home" of player):
+        cancel event
+        if event-slot = 10:
+            send "This feature is not available yet!"
+        else if event-slot = 12:
+            if double tag "custom;HomeX;1" of nbt compound of player is set:
+                set {_x} to double tag "custom;HomeX;1" of nbt compound of player
+                set {_y} to double tag "custom;HomeY;1" of nbt compound of player
+                set {_z} to double tag "custom;HomeZ;1" of nbt compound of player
+                set {_world} to string tag "custom;HomeWorld;1" of nbt compound of player
+                set {_yaw} to double tag "custom;HomeYaw;1" of nbt compound of player
+                set {_pitch} to double tag "custom;HomePitch;1" of nbt compound of player
+                teleport player to location({_x}, {_y}, {_z}, world {_world}, {_yaw}, {_pitch})
+                send "&fTeleported to Home #1!"
+                play sound "entity.enderman.teleport" to player
+            else:
+                send "&fYou don't have a home #1 set!"
+                stop
+        else if event-slot = 13, 14, 15 or 16:
+            set {_item} to clicked slot
+            set {_name::*} to uncolored name of item split at "Home #"
+            set {_name::*} to {_name::2} split at " "
+            set {_home} to {_name::1} parsed as integer
+            
+            if player has permission "homes.%{_home}%":
+                if double tag "custom;HomeX;%{_home}%" of nbt compound of player is set:
+                    set {_x} to double tag "custom;HomeX;%{_home}%" of nbt compound of player
+                    set {_y} to double tag "custom;HomeY;%{_home}%" of nbt compound of player
+                    set {_z} to double tag "custom;HomeZ;%{_home}%" of nbt compound of player
+                    set {_world} to string tag "custom;HomeWorld;%{_home}%" of nbt compound of player
+                    set {_yaw} to double tag "custom;HomeYaw;%{_home}%" of nbt compound of player
+                    set {_pitch} to double tag "custom;HomePitch;%{_home}%" of nbt compound of player
+                    teleport player to location({_x}, {_y}, {_z}, world {_world}, {_yaw}, {_pitch})
+                    send "&fTeleported to Home #%{_home}%!"
+                    play sound "entity.enderman.teleport" to player
+                else:
+                    send "&fYou don't have a home #%{_home}% set!"
+                    stop
+            else:
+                send "&fYou don't have access to this home!"
+                stop
+        else if event-slot = 19:
+            close inventory of player
+        else if event-slot = 21:
+            if double tag "custom;HomeX;1" of nbt compound of player is set:
+                delete double tag "custom;HomeX;1" of nbt compound of player
+                delete double tag "custom;HomeY;1" of nbt compound of player
+                delete double tag "custom;HomeZ;1" of nbt compound of player    
+                delete string tag "custom;HomeWorld;1" of nbt compound of player
+                send "&fRemoved Home #1!"
+            else:
+                send "&fYou don't have a home #1 set!"
+                stop
+        else if event-slot = 22, 23, 24 or 25:
+            set {_item} to clicked slot
+            set {_name::*} to uncolored name of item split at "Home #"
+            set {_name::*} to {_name::2} split at " "
+            set {_home} to {_name::1} parsed as integer
+
+            if player has permission "homes.%{_home}%":
+                if double tag "custom;HomeX;%{_home}%" of nbt compound of player is set:
+                    delete double tag "custom;HomeX;%{_home}%" of nbt compound of player
+                    delete double tag "custom;HomeY;%{_home}%" of nbt compound of player
+                    delete double tag "custom;HomeZ;%{_home}%" of nbt compound of player    
+                    delete string tag "custom;HomeWorld;%{_home}%" of nbt compound of player
+                    send "&fRemoved Home #%{_home}%!"
+                else:
+                    send "&fYou don't have a home #%{_home}% set!"
+                    stop
+            else:
+                send "&fYou don't have access to this home!"
+                stop
+
+command sethome [<integer>]:
+    trigger:
+        if arg-1 = 1:
+            set double tag "custom;HomeX;1" of nbt compound of player to x coordinate of player
+            set double tag "custom;HomeY;1" of nbt compound of player to y coordinate of player
+            set double tag "custom;HomeZ;1" of nbt compound of player to z coordinate of player
+            set string tag "custom;HomeWorld;1" of nbt compound of player to name of world of player
+            set double tag "custom;HomeYaw;1" of nbt compound of player to yaw of player
+            set double tag "custom;HomePitch;1" of nbt compound of player to pitch of player
+            send "&fSet Home #1!"
+        else:
+            if player has permission "homes.%arg-1%":
+                set double tag "custom;HomeX;%arg-1%" of nbt compound of player to x coordinate of player
+                set double tag "custom;HomeY;%arg-1%" of nbt compound of player to y coordinate of player
+                set double tag "custom;HomeZ;%arg-1%" of nbt compound of player to z coordinate of player
+                set string tag "custom;HomeWorld;%arg-1%" of nbt compound of player to name of world of player
+                set double tag "custom;HomeYaw;%arg-1%" of nbt compound of player to yaw of player
+                set double tag "custom;HomePitch;%arg-1%" of nbt compound of player to pitch of player
+                send "&fSet Home #%arg-1%!"
+            else:
+                send "&fYou don't have access to this home!"
