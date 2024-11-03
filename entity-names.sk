@@ -1,0 +1,16 @@
+# Display entity names with health in red
+# Auto-updates when health changes
+
+on spawn:
+    event-entity is not a player
+    set {_x} to "%type of event-entity%"
+    set {_maxH} to max health of event-entity
+    set {_h} to health of event-entity
+    set display name of entity to "<##FF0000>&l%strictCase({_x})%&r &7(&c%{_h}%&7/&c%{_maxH}%&7)"
+
+on damage:
+    victim is not a player
+    set {_x} to "%type of victim%"
+    set {_maxH} to max health of victim
+    set {_h} to health of victim
+    set display name of victim to "<##FF0000>&l%strictCase({_x})%&r &7(&c%{_h}%&7/&c%{_maxH}%&7)"
