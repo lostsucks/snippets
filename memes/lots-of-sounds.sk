@@ -1,0 +1,9 @@
+# silly little skript i made for my server a long time ago
+# Skript-Reflect 2.5.0+, Skript 2.9.0+, SkBee 3.6.1+
+
+effect play %int% random sounds to %players% with a %int% tick delay:
+    trigger:
+        loop expr-1 times:
+            play sound (random element out of all available sounds) to expr-2
+            wait "%expr-3% ticks" parsed as timespan
+        stop all sounds for expr-2
