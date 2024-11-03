@@ -1,0 +1,10 @@
+# really short ahh skript i made
+# SkQuery is really outdated so I made this for my own server but its really useful
+# skript-reflect is required
+
+condition %number% is divisible by %number%:
+    check:
+        if mod(expr-1, expr-2) is 0:
+            return true
+        else:
+            return false
