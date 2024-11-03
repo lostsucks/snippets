@@ -1,0 +1,102 @@
+# very old pouches skript i made for a skyblock server
+# Skript 2.9.0+, SkBee 3.6.1+
+
+on right click holding player head:
+    cancel event
+    if name of player's tool contains " &fMoney Pouch":
+        if player is not sneaking:
+            set {_name::*} to name of player's tool split at " &fMoney Pouch"
+            set {_name} to {_name::1}
+
+            set {_lore::*} to lore of player's tool
+
+            set {_amtMax::*} to {_lore::2} split at "$"
+            set {_amtMax} to {_amtMax::2}
+            replace all "," in {_amtMax} with ""
+
+            set {_amtMin::*} to {_lore::3} split at "$"
+            set {_amtMin} to {_amtMin::2}
+            replace all "," in {_amtMin} with ""
+
+            set {_amount} to random integer between {_amtMin} pas and {_amtMax} pas
+            set player's balance to player's balance + {_amount}
+
+            update the player's scoreboard
+            remove 1 from item amount of player's held item
+            play sound "block.amethyst_cluster.break" to player
+
+            send title "&7&l↑ %{_name}% &fPouch Redeemed!&l &7&l↑" with subtitle "&a$%format({_amount})% &fwas added to your account." to player for 2 seconds
+        else:
+            set {_multiplied} to item amount of player's held item
+
+            set {_name::*} to name of player's tool split at " &fMoney Pouch"
+            set {_name} to {_name::1}
+
+            set {_lore::*} to lore of player's tool
+
+            set {_amtMax::*} to {_lore::2} split at "$"
+            set {_amtMax} to {_amtMax::2}
+            replace all "," in {_amtMax} with ""
+
+            set {_amtMin::*} to {_lore::3} split at "$"
+            set {_amtMin} to {_amtMin::2}
+            replace all "," in {_amtMin} with ""
+
+            loop {_multiplied} times:
+                set {_amount} to random integer between {_amtMin} pas and {_amtMax} pas
+                add {_amount} to {_total}
+
+            set player's balance to player's balance + {_total}
+
+            update the player's scoreboard
+            remove {_multiplied} from item amount of player's held item
+            play sound "block.amethyst_cluster.break" to player
+
+            send title "&7&l↑ %{_name}% &fPouch Redeemed!&l &7&l↑" with subtitle "&a$%format({_total})% &fwas added to your account." to player for 2 seconds
+
+    else if name of player's offhand tool contains " &fMoney Pouch":
+        cancel event
+        send action bar "&c&l[!] &7You cannot use a money pouch via the offhand!"
+# k,3|M,6|B,9|T,12|Q,15|QT,18|SX,21|SS,24|O,27|N,30|D,33|UD,36|DD,39|TD,42|QD,45|QTD,48|SD,51|SSD,54|OD,57|ND,60|VG,63|UVG,66|DVG,69|TVG,72
+
+function format(n: number) :: text:
+    set {_data} to "TVG,72|DVG,69|UVG,66|VG,63|ND,60|OD,57|SSD,54|SD,51|QTD,48|QD,45|TD,42|DD,39|UD,36|D,33|N,30|O,27|SS,24|SX,21|QT,18|Q,15|T,12|B,9|M,6|k,3"
+    loop split {_data} at "|":
+        set {_s::*} to split loop-value at ","
+        set {_s::2} to {_s::2} parsed as a number
+        {_n} >= 10 ^ {_s::2}
+        return "%{_n} / 10 ^ {_s::2} %%{_s::1}%"
+    return "%{_n}%"
+
+expression %string% (pas|PAS):
+    get:
+        return expr-1 parsed as integer
+
+# give money pouch
+
+command givePouch <text> <player>:
+    permission: void.givepouch
+    trigger:
+        if arg-1 is "basic":
+            give arg-2 {basicPouch}
+            send "&7You have been given a &fBasic Money Pouch&7."
+        else if arg-1 is "medium":
+            give arg-2 {mediumPouch}
+            send "&7You have been given a &fMedium Money Pouch&7."
+        else if arg-1 is "heavy":
+            give arg-2 {heavyPouch}
+            send "&7You have been given a &fHeavy Money Pouch&7."
+        else if arg-1 is "giant":
+            give arg-2 {giantPouch}
+            send "&7You have been given a &fGiant Money Pouch&7."
+        else if arg-1 is "enourmous":
+            give arg-2 {enourmousPouch}
+            send "&7You have been given a &fEnourmous Money Pouch&7."
+        else if arg-1 is "crystalized":
+            give arg-2 {crystalizedPouch}
+            send "&7You have been given a &fCrystalized Money Pouch&7."
+        else:
+            send "&cInvalid pouch type. Valid types: &fbasic, medium, heavy, giant, enourmous, crystalized"
+
+on tab complete of "givePouch":
+    set tab completions for position 1 to "basic", "medium", "heavy", "giant", "enourmous" and "crystalized"
