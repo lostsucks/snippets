@@ -1,0 +1,35 @@
+# A super clean Async Chat System
+# Has things like [item], chat pinging, and more!
+
+# Incompatible with SaberFactions, or anything that manages the chat with its own system.
+
+on async chat:
+    # set {_m::1} to text component from "&8[&7%int tag "custom;level" of (nbt compound of player)%⭐&8] "
+    # Change this to whatever you want to come before the player's name, like a level.
+    set {_m::1} to text component from ""
+    set {_m::2} to text component from "&r%player's prefix%%player's name%&8 ➡ "
+    set {_m::3} to async chat message
+
+    # You can change the hover event to whatever you want, like showing the player's money, or whatever.
+    set hover event of {_m::1} to hover event showing "&c&l%player's name%%nl%  &fExample &7→ &fExample"
+
+    # Chat Pinging
+    loop all players:
+        if "%{_m::3}%" contains loop-player's name:
+            set {_m} to text component from loop-player's name
+            set color format of {_m} to yellow
+            component replace loop-player's name with {_m} in {_m::3}
+            play sound "entity.experience_orb.pickup" to loop-player
+
+    set {_format} to merge components {_m::*}
+   
+    # [item] or [i] will show the player's tool in the chat.
+    if "%{_format}%" contains "[item]" or "[i]":
+        set {_t} to translate component of "&b%name of player's tool%" if name of player's tool is set
+        set {_t} to translate component of player's tool if name of player's tool is not set
+        set hover event of {_t} to hover event showing player's tool
+        set {_m} to merge components ("[", {_t}, "]")
+        set color format of {_m} to rgb(0, 200, 255)
+        component replace "\[item]" and "\[i]" with {_m} in {_format}
+
+    set async chat format to {_format}
