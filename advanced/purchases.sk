@@ -46,6 +46,7 @@ command purchase <offline player> <number> <text>:
 
 on chat:
     if {-purchase} = true:
+        set {_m} to message
         if {_m} contains "gg":
             if {-saidGG::%uuid of player%} is not set:  
                 set {_list::*} to "&b&k|&3&lG&b&lG&3&k|&r", "&c&k|&4&lG&c&lG&4&k|&r", "&e&k|&6&lG&e&lG&6&k|&r" and "&a&k|&2&lG&a&lG&2&k|&r"
