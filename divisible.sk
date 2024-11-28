@@ -8,3 +8,14 @@ condition %number% is divisible by %number%:
             return true
         else:
             return false
+
+# Skript 2.10+ introduced the syntax;
+# if %number% is evenly divisible by %number%
+# therefore, this custom skript is not required.
+
+# Example:
+function example(a: number, b: number) :: boolean:
+    if {_a} is evenly divisible by {_b}:
+        return true
+    else:
+        return false
