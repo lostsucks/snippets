@@ -1,0 +1,45 @@
+# Requires Skript-Reflect, Skript, FancyNpcs, and FancyHolograms
+# doesnt have everything, but some of the most important elements.
+
+import:
+    de.oliver.fancynpcs.api.FancyNpcsPlugin
+    de.oliver.fancynpcs.api.Npc
+    de.oliver.fancynpcs.api.NpcData
+    de.oliver.fancynpcs.api.utils.SkinFetcher
+
+    de.oliver.fancyholograms.api.FancyHologramsPlugin
+    de.oliver.fancyholograms.api.HologramManager
+    de.oliver.fancyholograms.api.data.HologramData
+    de.oliver.fancyholograms.api.hologram.Hologram
+    
+    java.util.List
+
+function setHologramText(h: string, t: string):
+    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
+    
+    set {_hologramData} to {_hologram}.getData()
+    {_hologramData}.setText(List.of({_t}))
+
+function addHologramLine(h: string, t: string):
+    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
+    
+    set {_hologramData} to {_hologram}.getData()
+    {_hologramData}.addLine({_t})
+
+function setNpcSkin(n: string, s: string):
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+
+    set {_skinData} to new SkinFetcher.SkinData({_s}, null, null)
+    {_npc}.getData().setSkin({_skinData})
+
+    {_npc}.removeForAll()
+    {_npc}.create()
+    {_npc}.spawnForAll()
+
+function setNpcName(n: string, s: string):
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    {_npc}.getData().setDisplayName({_s})
+
+    {_npc}.updateForAll()
