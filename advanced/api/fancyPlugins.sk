@@ -14,6 +14,8 @@ import:
     
     java.util.List
 
+# FancyHolograms
+
 function setHologramText(h: string, t: string):
     set {_manager} to FancyHologramsPlugin.get().getHologramManager()
     set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
@@ -27,6 +29,29 @@ function addHologramLine(h: string, t: string):
     
     set {_hologramData} to {_hologram}.getData()
     {_hologramData}.addLine({_t})
+
+function removeHologramLine(h: string, l: number):
+    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
+    
+    set {_hologramData} to {_hologram}.getData()
+    {_hologramData}.removeLine({_l})
+
+function updateHoogram(h: string):
+    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
+    
+    {_hologram}.queueUpdate()
+
+# FancyHolograms Getters
+
+function getHologramText(h: string) :: string:
+    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
+    
+    return {_hologram}.getData().getText()
+
+# FancyNpcs
 
 function setNpcSkin(n: string, s: string):
     set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
@@ -43,3 +68,29 @@ function setNpcName(n: string, s: string):
     {_npc}.getData().setDisplayName({_s})
 
     {_npc}.updateForAll()
+
+function setNpcLocation(n: string, l: location):
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    {_npc}.getData().setLocation({_l})
+
+    {_npc}.updateForAll()
+
+function setNpcScale(n: string, s: number):
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    {_npc}.getData().setScale({_s})
+
+    {_npc}.updateForAll()
+
+# FancyNpcs Getters
+
+function getNpcLocation(n: string) :: location:
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    return {_npc}.getData().getLocation()
+
+function getNpcName(n: string) :: string:
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    return {_npc}.getData().getDisplayName()
+
+function getNpcId(n: string) :: string:
+    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+    return {_npc}.getData().getId()
