@@ -60,7 +60,7 @@ on right click holding player head:
 # k,3|M,6|B,9|T,12|Q,15|QT,18|SX,21|SS,24|O,27|N,30|D,33|UD,36|DD,39|TD,42|QD,45|QTD,48|SD,51|SSD,54|OD,57|ND,60|VG,63|UVG,66|DVG,69|TVG,72
 
 function format(n: number) :: text:
-    set {_data} to "TVG,72|DVG,69|UVG,66|VG,63|ND,60|OD,57|SSD,54|SD,51|QTD,48|QD,45|TD,42|DD,39|UD,36|D,33|N,30|O,27|SS,24|SX,21|QT,18|Q,15|T,12|B,9|M,6|k,3"
+    set {_data} to "SX,21|QT,18|Q,15|T,12|B,9|M,6|k,3"
     loop split {_data} at "|":
         set {_s::*} to split loop-value at ","
         set {_s::2} to {_s::2} parsed as a number
