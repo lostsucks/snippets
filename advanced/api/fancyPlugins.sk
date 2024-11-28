@@ -1,6 +1,36 @@
 # Requires Skript-Reflect, Skript, FancyNpcs, and FancyHolograms
 # doesnt have everything, but some of the most important elements.
 
+# Update: Made everything use Skript-reflect syntax, patterns & examples below:
+
+# set [the] holo[gram] %string%['s] (text|string) to %string%
+    # set hologram "welcome"'s text to "Welcome to the server!%nl%Have fun!"
+# add %string% to [the] holo[gram] %string%
+    # add "Hello!" to hologram "welcome"
+# remove line %number% from [the] holo[gram] %string%
+    # remove line 1 from hologram "welcome"
+# update [the] holo[gram] %string%
+    # update hologram "welcome"
+# [the] holo[gram] %string%['s] (text|string)
+    # send (the text of hologram "welcome") to player
+
+# set [the] npc %string%['s] skin to [name|url] %string% 
+    # set npc "bob"'s skin to name "Notch"
+    # set npc "Store"'s skin to "https://s.namemc.com/i/1c462198c6e0fddd.png"
+# set [the] npc %string%['s] [display][ ]name to %string% || set [the] [display][ ]name of npc %string% to %string%
+    # set npc "bob"'s display name to "Bob"
+# set [the] npc %string%['s] location to %location% || teleport [the] npc %string% to %location%
+    # set npc "bob"'s location to player's location
+    # teleport the npc "bob" to player's location
+# set [the] npc %string%['s] scale [attribute] to %number% || set [the] scale [attribute] of npc %string% to %number%
+    # set npc "bob"'s scale to 1.5
+# [the] location of npc %string%
+    # set {_loc} to (location of npc "bob")
+# [the] [display][ ]name of npc %string%
+    # set {_name} to (name of npc "bob")
+# [the] id of npc %string%
+    # set {_id} to (id of npc "bob")
+
 import:
     de.oliver.fancynpcs.api.FancyNpcsPlugin
     de.oliver.fancynpcs.api.Npc
@@ -16,81 +46,112 @@ import:
 
 # FancyHolograms
 
-function setHologramText(h: string, t: string):
-    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
-    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
-    
-    set {_hologramData} to {_hologram}.getData()
-    {_hologramData}.setText(List.of({_t}))
+effect:
+    patterns:
+        set [the] holo[gram] %string%['s] (text|string) to %string%
+        set %string%['s] holo[gram] (text|string) to %string%
+    trigger:
+        set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+        set {_hologram} to {_manager}.getHologram(expr-1).orElse(null)
+        set {_hologramData} to {_hologram}.getData()
+        {_hologramData}.setText(List.of(expr-2))
 
-function addHologramLine(h: string, t: string):
-    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
-    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
-    
-    set {_hologramData} to {_hologram}.getData()
-    {_hologramData}.addLine({_t})
+effect:
+    patterns:
+        add %string% to [the] holo[gram] %string%
+    trigger:
+        set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+        set {_hologram} to {_manager}.getHologram(expr-1).orElse(null)
+        set {_hologramData} to {_hologram}.getData()
+        {_hologramData}.addLine(expr-2)
 
-function removeHologramLine(h: string, l: number):
-    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
-    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
-    
-    set {_hologramData} to {_hologram}.getData()
-    {_hologramData}.removeLine({_l})
+effect:
+    patterns:
+        remove line %number% from [the] holo[gram] %string%
+    trigger:
+        set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+        set {_hologram} to {_manager}.getHologram(expr-2).orElse(null)
+        set {_hologramData} to {_hologram}.getData()
+        {_hologramData}.removeLine(expr-1)
 
-function updateHoogram(h: string):
-    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
-    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
-    
-    {_hologram}.queueUpdate()
+effect:
+    patterns:
+        update [the] holo[gram] %string%
+    trigger:
+        set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+        set {_hologram} to {_manager}.getHologram(expr-1).orElse(null)
+        {_hologram}.queueUpdate()
 
 # FancyHolograms Getters
 
-function getHologramText(h: string) :: string:
-    set {_manager} to FancyHologramsPlugin.get().getHologramManager()
-    set {_hologram} to {_manager}.getHologram({_h}).orElse(null)    
-    
-    return {_hologram}.getData().getText()
+expression:
+    patterns:
+        [the] holo[gram] %string%['s] (text|string)
+    get:
+        set {_manager} to FancyHologramsPlugin.get().getHologramManager()
+        set {_hologram} to {_manager}.getHologram(expr-1).orElse(null)
+        
+        return {_hologram}.getData().getText()
 
 # FancyNpcs
 
-function setNpcSkin(n: string, s: string):
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
+effect:
+    patterns:
+        set [the] npc %string%['s] skin to [name|url] %string%
+    trigger:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        set {_skinData} to new SkinFetcher.SkinData(expr-2, null, null)
+        {_npc}.getData().setSkin({_skinData})
+        {_npc}.removeForAll()
+        {_npc}.create()
+        {_npc}.spawnForAll()
 
-    set {_skinData} to new SkinFetcher.SkinData({_s}, null, null)
-    {_npc}.getData().setSkin({_skinData})
+effect:
+    patterns:
+        set [the] npc %string%['s] [display][ ]name to %string%
+        set [the] [display][ ]name of npc %string% to %string%
+    trigger:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        {_npc}.getData().setDisplayName(expr-2)
+        {_npc}.updateForAll()
 
-    {_npc}.removeForAll()
-    {_npc}.create()
-    {_npc}.spawnForAll()
+effect:
+    patterns:
+        set [the] npc %string%['s] location to %location%
+        teleport [the] npc %string% to %location%
+    trigger:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        {_npc}.getData().setLocation(expr-2)
+        {_npc}.updateForAll()
 
-function setNpcName(n: string, s: string):
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    {_npc}.getData().setDisplayName({_s})
-
-    {_npc}.updateForAll()
-
-function setNpcLocation(n: string, l: location):
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    {_npc}.getData().setLocation({_l})
-
-    {_npc}.updateForAll()
-
-function setNpcScale(n: string, s: number):
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    {_npc}.getData().setScale({_s})
-
-    {_npc}.updateForAll()
+effect:
+    patterns:
+        set [the] npc %string%['s] scale [attribute] to %number%
+        set [the] scale [attribute] of npc %string% to %number%
+    trigger:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        {_npc}.getData().setScale(expr-2)
+        {_npc}.updateForAll()
 
 # FancyNpcs Getters
 
-function getNpcLocation(n: string) :: location:
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    return {_npc}.getData().getLocation()
+expression:
+    patterns:
+        [the] location of npc %string%
+    get:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        return {_npc}.getData().getLocation()
 
-function getNpcName(n: string) :: string:
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    return {_npc}.getData().getDisplayName()
+expression:
+    patterns:
+        [the] [display][ ]name of npc %string%
+    get:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        return {_npc}.getData().getDisplayName()
 
-function getNpcId(n: string) :: string:
-    set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc({_n})
-    return {_npc}.getData().getId()
+expression:
+    patterns:
+        [the] id of npc %string%
+    get:
+        set {_npc} to FancyNpcsPlugin.get().getNpcManager().getNpc(expr-1)
+        return {_npc}.getData().getId()
